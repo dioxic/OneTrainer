@@ -10,6 +10,7 @@ from modules.util.TimedActionMixin import TimedActionMixin
 from modules.util.TrainProgress import TrainProgress
 
 import torch
+import wandb
 from torch import Tensor
 from torch.optim.lr_scheduler import LRScheduler
 from torch.utils.tensorboard import SummaryWriter
@@ -95,7 +96,7 @@ class BaseModelSetup(
     ):
         pass
 
-    def report_to_tensorboard(
+    def report_training_stats(
             self,
             model: BaseModel,
             config: TrainConfig,
@@ -116,9 +117,9 @@ class BaseModelSetup(
         reported_learning_rates = config.optimizer.optimizer.maybe_adjust_lrs(reported_learning_rates, model.optimizer)
 
         for name, lr in reported_learning_rates.items():
-            tensorboard.add_scalar(
-                f"lr/{name}", lr, model.train_progress.global_step
-            )
+            tensorboard.add_scalar(f"lr/{name}", lr, model.train_progress.global_step)
+            if config.wandb:
+                wandb.log({f"lr/{name}": lr}, model.train_progress.global_step)
 
     def stop_embedding_training_elapsed(
             self,

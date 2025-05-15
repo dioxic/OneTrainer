@@ -58,4 +58,7 @@ class LinearFp8(
             weight = weight.mul_(self._scale)
         x = nn.functional.linear(x, weight, self.bias)
 
+        # weight_t = weight.t()
+        # x = torch._scaled_mm(x, weight_t, scale_a=1.0, scale_b=1.0, bias=self.bias, out_dtype=x.dtype)
+
         return x
