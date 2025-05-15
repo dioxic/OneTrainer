@@ -226,27 +226,36 @@ class TrainUI(ctk.CTk):
                          tooltip="Keep Tensorboard accessible even when not training. Useful for monitoring completed training sessions.")
         components.switch(frame, 8, 1, self.ui_state, "tensorboard_always_on", command=self._on_always_on_tensorboard_toggle)
 
-        # validation
-        components.label(frame, 9, 0, "Validation",
-                         tooltip="Enable validation steps and add new graph in tensorboard")
-        components.switch(frame, 9, 1, self.ui_state, "validation")
+        # wandb
+        components.label(frame, 9, 0, "Enable WanDB",
+                         tooltip="Upload training stats to WanDB")
+        components.switch(frame, 9, 1, self.ui_state, "wandb")
 
-        components.label(frame, 10, 0, "Validate after",
+        components.label(frame, 10, 0, "WanDB Project",
+                         tooltip="WanDB project name")
+        components.entry(frame, 10, 1, self.ui_state, "wandb_project")
+
+        # validation
+        components.label(frame, 11, 0, "Validation",
+                         tooltip="Enable validation steps and add new graph in tensorboard")
+        components.switch(frame, 11, 1, self.ui_state, "validation")
+
+        components.label(frame, 12, 0, "Validate after",
                          tooltip="The interval used when validate training")
-        components.time_entry(frame, 10, 1, self.ui_state, "validate_after", "validate_after_unit")
+        components.time_entry(frame, 12, 1, self.ui_state, "validate_after", "validate_after_unit")
 
         # device
-        components.label(frame, 11, 0, "Dataloader Threads",
+        components.label(frame, 13, 0, "Dataloader Threads",
                          tooltip="Number of threads used for the data loader. Increase if your GPU has room during caching, decrease if it's going out of memory during caching.")
-        components.entry(frame, 11, 1, self.ui_state, "dataloader_threads")
+        components.entry(frame, 13, 1, self.ui_state, "dataloader_threads")
 
-        components.label(frame, 12, 0, "Train Device",
+        components.label(frame, 14, 0, "Train Device",
                          tooltip="The device used for training. Can be \"cuda\", \"cuda:0\", \"cuda:1\" etc. Default:\"cuda\"")
-        components.entry(frame, 12, 1, self.ui_state, "train_device")
+        components.entry(frame, 14, 1, self.ui_state, "train_device")
 
-        components.label(frame, 13, 0, "Temp Device",
+        components.label(frame, 15, 0, "Temp Device",
                          tooltip="The device used to temporarily offload models while they are not used. Default:\"cpu\"")
-        components.entry(frame, 13, 1, self.ui_state, "temp_device")
+        components.entry(frame, 15, 1, self.ui_state, "temp_device")
 
         frame.pack(fill="both", expand=1)
         return frame
@@ -326,6 +335,10 @@ class TrainUI(ctk.CTk):
         components.label(sub_frame, 0, 2, "Samples to Tensorboard",
                          tooltip="Whether to include sample images in the Tensorboard output.")
         components.switch(sub_frame, 0, 3, self.ui_state, "samples_to_tensorboard")
+
+        components.label(sub_frame, 0, 4, "Samples to WanDB",
+                         tooltip="Whether to upload sample images to the WanDB project.")
+        components.switch(sub_frame, 0, 5, self.ui_state, "samples_to_wandb")
 
         # table
         frame = ctk.CTkFrame(master=master, corner_radius=0)
