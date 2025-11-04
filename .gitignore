@@ -18,6 +18,7 @@ debug*.py
 /update.var
 config.json
 secrets.json
+*.zip
 
 # environments
 /.venv*
@@ -36,3 +37,4 @@ pixi.toml
 /wandb
 train.bat
 debug_report.log
+config_diff.txt
