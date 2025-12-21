@@ -107,7 +107,6 @@ class GenericTrainer(BaseTrainer):
                     "embedding_name": config.embedding.model_name,
                     "embedding_token": config.embedding.token_count,
                     "train_dtype": config.train_dtype.name,
-                    "weight_dtype": config.weight_dtype.name,
                     "lora_weight_dtype": config.lora_weight_dtype.name,
                     "embedding_weight_dtype": config.embedding_weight_dtype.name,
                     "output_dtype": config.output_dtype.name,
