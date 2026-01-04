@@ -296,49 +296,49 @@ class TrainUI(ctk.CTk):
                          tooltip="Enable validation steps and add new graph in tensorboard")
         components.switch(frame, 10, 1, self.ui_state, "validation")
 
-        components.label(frame, 10, 0, "Validate after",
+        components.label(frame, 11, 0, "Validate after",
                          tooltip="The interval used when validate training")
-        components.time_entry(frame, 10, 1, self.ui_state, "validate_after", "validate_after_unit")
+        components.time_entry(frame, 11, 1, self.ui_state, "validate_after", "validate_after_unit")
 
         # device
-        components.label(frame, 11, 0, "Dataloader Threads",
+        components.label(frame, 12, 0, "Dataloader Threads",
                          tooltip="Number of threads used for the data loader. Increase if your GPU has room during caching, decrease if it's going out of memory during caching.")
-        components.entry(frame, 11, 1, self.ui_state, "dataloader_threads")
+        components.entry(frame, 12, 1, self.ui_state, "dataloader_threads")
 
-        components.label(frame, 12, 0, "Train Device",
+        components.label(frame, 13, 0, "Train Device",
                          tooltip="The device used for training. Can be \"cuda\", \"cuda:0\", \"cuda:1\" etc. Default:\"cuda\". Must be \"cuda\" for multi-GPU training.")
-        components.entry(frame, 12, 1, self.ui_state, "train_device")
+        components.entry(frame, 13, 1, self.ui_state, "train_device")
 
-        components.label(frame, 13, 0, "Multi-GPU",
+        components.label(frame, 14, 0, "Multi-GPU",
                          tooltip="Enable multi-GPU training")
-        components.switch(frame, 13, 1, self.ui_state, "multi_gpu")
-        components.label(frame, 13, 2, "Device Indexes",
+        components.switch(frame, 14, 1, self.ui_state, "multi_gpu")
+        components.label(frame, 14, 2, "Device Indexes",
                          tooltip="Multi-GPU: A comma-separated list of device indexes. If empty, all your GPUs are used. With a list such as \"0,1,3,4\" you can omit a GPU, for example an on-board graphics GPU.")
-        components.entry(frame, 13, 3, self.ui_state, "device_indexes")
+        components.entry(frame, 14, 3, self.ui_state, "device_indexes")
 
-        components.label(frame, 14, 0, "Gradient Reduce Precision",
+        components.label(frame, 15, 0, "Gradient Reduce Precision",
                          tooltip="WEIGHT_DTYPE: Reduce gradients between GPUs in your weight data type; can be imprecise, but more efficient than float32\n"
                                  "WEIGHT_DTYPE_STOCHASTIC: Sum up the gradients in your weight data type, but average them in float32 and stochastically round if your weight data type is bfloat16\n"
                                  "FLOAT_32: Reduce gradients in float32\n"
                                  "FLOAT_32_STOCHASTIC: Reduce gradients in float32; use stochastic rounding to bfloat16 if your weight data type is bfloat16",
                          wide_tooltip=True)
-        components.options(frame, 14, 1, [str(x) for x in list(GradientReducePrecision)], self.ui_state,
+        components.options(frame, 15, 1, [str(x) for x in list(GradientReducePrecision)], self.ui_state,
                            "gradient_reduce_precision")
 
-        components.label(frame, 15, 2, "Fused Gradient Reduce",
+        components.label(frame, 16, 2, "Fused Gradient Reduce",
                          tooltip="Multi-GPU: Gradient synchronisation during the backward pass. Can be more efficient, especially with Async Gradient Reduce")
-        components.switch(frame, 15, 3, self.ui_state, "fused_gradient_reduce")
+        components.switch(frame, 16, 3, self.ui_state, "fused_gradient_reduce")
 
-        components.label(frame, 16, 0, "Async Gradient Reduce",
+        components.label(frame, 17, 0, "Async Gradient Reduce",
                          tooltip="Multi-GPU: Asynchroniously start the gradient reduce operations during the backward pass. Can be more efficient, but requires some VRAM.")
-        components.switch(frame, 16, 1, self.ui_state, "async_gradient_reduce")
-        components.label(frame, 16, 2, "Buffer size (MB)",
+        components.switch(frame, 17, 1, self.ui_state, "async_gradient_reduce")
+        components.label(frame, 17, 2, "Buffer size (MB)",
                          tooltip="Multi-GPU: Maximum VRAM for \"Async Gradient Reduce\", in megabytes. A multiple of this value can be needed if combined with \"Fused Back Pass\" and/or \"Layer offload fraction\"")
-        components.entry(frame, 16, 3, self.ui_state, "async_gradient_reduce_buffer")
+        components.entry(frame, 17, 3, self.ui_state, "async_gradient_reduce_buffer")
 
-        components.label(frame, 17, 0, "Temp Device",
+        components.label(frame, 18, 0, "Temp Device",
                          tooltip="The device used to temporarily offload models while they are not used. Default:\"cpu\"")
-        components.entry(frame, 17, 1, self.ui_state, "temp_device")
+        components.entry(frame, 18, 1, self.ui_state, "temp_device")
 
         frame.pack(fill="both", expand=1)
         return frame
