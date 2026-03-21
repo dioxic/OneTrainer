@@ -691,7 +691,7 @@ def create_optimizer(
                 beta3_ema=optimizer_config.beta3 if optimizer_config.beta3 is not None else 0.9999,
                 alpha=optimizer_config.alpha if optimizer_config.alpha is not None else 5,
                 kourkoutas_beta=optimizer_config.kourkoutas_beta if optimizer_config.kourkoutas_beta is not None else False,
-                k_warmup_steps=(config.learning_rate_warmup_steps / config.gradient_accumulation_steps),
+                k_warmup_steps=optimizer_config.k_warmup_steps if optimizer_config.k_warmup_steps is not None else 0,
                 compiled_optimizer=optimizer_config.compile if optimizer_config.compile is not None else False,
                 scaled_optm=optimizer_config.scaled_optm if optimizer_config.scaled_optm is not None else False,
                 centered_wd=optimizer_config.centered_wd if optimizer_config.centered_wd is not None else 0.0,
