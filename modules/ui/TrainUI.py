@@ -668,6 +668,7 @@ class TrainUI(ctk.CTk):
         if not self.training_callbacks and not self.training_commands:
             window = SampleWindow(
                 self,
+                use_external_model=False,
                 train_config=self.train_config,
             )
             self.wait_window(window)
@@ -706,6 +707,7 @@ class TrainUI(ctk.CTk):
             window = SampleWindow(
                 self,
                 train_config=self.train_config,
+                use_external_model=True,
                 callbacks=training_callbacks,
                 commands=training_commands,
             )
