@@ -283,6 +283,7 @@ class LoHaModule(PeftBase):
         # TODO
         pass
 
+
 class LoRAModule(PeftBase):
     lora_down: nn.Module | None
     lora_up: nn.Module | None
@@ -719,7 +720,7 @@ class LoRAModuleWrapper:
             else:
                  self.klass = OFTModule
                  self.dummy_klass = DummyOFTModule
-                 
+
             self.additional_args = [
                 config.oft_block_size,
                 config.oft_coft,
