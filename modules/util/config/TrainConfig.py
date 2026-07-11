@@ -377,6 +377,8 @@ class TrainConfig(BaseConfig):
     tensorboard_expose: bool
     tensorboard_always_on: bool
     tensorboard_port: str
+    wandb: bool
+    wandb_project: str
     validation: bool
     validate_after: float
     validate_after_unit: TimeUnit
@@ -569,6 +571,7 @@ class TrainConfig(BaseConfig):
     sample_video_format: VideoFormat
     sample_audio_format: AudioFormat
     samples_to_tensorboard: bool
+    samples_to_wandb: bool
     non_ema_sampling: bool
 
     # cloud settings
@@ -1019,6 +1022,8 @@ class TrainConfig(BaseConfig):
         data.append(("tensorboard_expose", False, bool, False))
         data.append(("tensorboard_always_on", False, bool, False))
         data.append(("tensorboard_port", 6006, int, False))
+        data.append(("wandb", False, bool, False))
+        data.append(("wandb_project", "", str, False))
         data.append(("validation", False, bool, False))
         data.append(("validate_after", 1, int, False))
         data.append(("validate_after_unit", TimeUnit.EPOCH, TimeUnit, False))
@@ -1261,6 +1266,7 @@ class TrainConfig(BaseConfig):
         data.append(("sample_video_format", VideoFormat.MP4, VideoFormat, False))
         data.append(("sample_audio_format", AudioFormat.MP3, AudioFormat, False))
         data.append(("samples_to_tensorboard", True, bool, False))
+        data.append(("samples_to_wandb", False, bool, False))
         data.append(("non_ema_sampling", True, bool, False))
 
         # backup settings

@@ -34,6 +34,7 @@ pixi.toml
 
 # misc files
 /src
+/wandb
 train.bat
 debug_report.log
 config_diff.txt

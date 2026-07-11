@@ -11,6 +11,7 @@ from modules.util.TimedActionMixin import TimedActionMixin
 from modules.util.TrainProgress import TrainProgress
 
 import torch
+import wandb
 from torch import Tensor
 from torch.optim.lr_scheduler import LRScheduler
 from torch.utils.tensorboard import SummaryWriter
@@ -134,11 +135,15 @@ class BaseModelSetup(
             tensorboard.add_scalar(
                 f"lr/{name}", lr, model.train_progress.global_step
             )
+            if config.wandb:
+                wandb.log({f"lr/{name}": lr}, model.train_progress.global_step)
 
         if hasattr(model.optimizer, 'kourkoutas_helper') and model.optimizer.kourkoutas_helper is not None:
             stats = model.optimizer.kourkoutas_helper.last_beta2_stats
             if stats:
                 tensorboard.add_scalar("kourkoutas/beta2_mean", stats['mean'], model.train_progress.global_step)
+                if config.wandb:
+                    wandb.log({"kourkoutas/beta2_mean": stats['mean']}, model.train_progress.global_step)
 
     def stop_embedding_training_elapsed(
             self,
