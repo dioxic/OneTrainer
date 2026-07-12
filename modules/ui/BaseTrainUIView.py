@@ -172,14 +172,22 @@ class BaseTrainUIView(ABC):
                          tooltip="Port to use for Tensorboard link")
         self.components.entry(frame, 7, 3, ui_state, "tensorboard_port")
 
-        # validation
-        self.components.label(frame, 8, 0, "Validation",
-                         tooltip="Enable validation steps and add new graph in tensorboard")
-        self.components.switch(frame, 8, 1, ui_state, "validation")
+        # wandb
+        self.components.label(frame, 8, 0, "Enable WanDB",
+                              tooltip="Enables WanDB export")
+        self.components.switch(frame, 8, 1, ui_state, "wandb")
+        self.components.label(frame, 8, 2, "WanDB Project",
+                              tooltip="The name of the WanDB project")
+        self.components.entry(frame, 8, 3, ui_state, "wandb_project")
 
-        self.components.label(frame, 8, 2, "Validate after",
+        # validation
+        self.components.label(frame, 9, 0, "Validation",
+                         tooltip="Enable validation steps and add new graph in tensorboard")
+        self.components.switch(frame, 9, 1, ui_state, "validation")
+
+        self.components.label(frame, 9, 2, "Validate after",
                          tooltip="The interval used when validate training")
-        self.components.time_entry(frame, 8, 3, ui_state, "validate_after", "validate_after_unit")
+        self.components.time_entry(frame, 9, 3, ui_state, "validate_after", "validate_after_unit")
 
         # device
         self.components.label(frame, 9, 0, "Train Device",
@@ -279,6 +287,10 @@ class BaseTrainUIView(ABC):
         self.components.label(sub_frame, 0, 2, "Samples to Tensorboard",
                          tooltip="Whether to include sample images in the Tensorboard output.")
         self.components.switch(sub_frame, 0, 3, ui_state, "samples_to_tensorboard")
+
+        self.components.label(sub_frame, 0, 4, "Samples to Wandb",
+                              tooltip="Whether to include sample images in the wandb output.")
+        self.components.switch(sub_frame, 0, 5, ui_state, "samples_to_wandb")
 
     def build_backup_tab_content(self, frame, controller, ui_state):
         # backup after

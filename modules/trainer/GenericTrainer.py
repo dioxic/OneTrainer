@@ -5,6 +5,7 @@ import math
 import os
 import shutil
 import traceback
+import wandb
 from collections.abc import Callable
 from pathlib import Path
 
@@ -77,6 +78,38 @@ class GenericTrainer(BaseTrainer):
             self.tensorboard = SummaryWriter(os.path.join(tensorboard_log_dir, f"{config.save_filename_prefix}{get_string_timestamp()}"))
             if config.tensorboard and not config.tensorboard_always_on:
                 super()._start_tensorboard()
+
+        if config.wandb:
+            wandb.init(
+                # set the wandb project where this run will be logged
+                project=config.wandb_project,
+                name=config.save_filename_prefix + ("-cache" if config.only_cache else ""),
+                # track hyperparameters and run metadata
+                config={
+                    "training_type": config.training_method.name,
+                    "lr": config.learning_rate,
+                    "optimizer": config.optimizer.optimizer.name,
+                    "scheduler": config.learning_rate_scheduler.name,
+                    "weight_decay": config.optimizer.weight_decay,
+                    "orthograd": config.optimizer.use_orthograd,
+                    "model_type": config.model_type.name,
+                    "base_model": config.base_model_name,
+                    "batch_size": config.batch_size,
+                    "GAS": config.gradient_accumulation_steps,
+                    "masked_training": config.masked_training,
+                    "peft_type": config.peft_type,
+                    "oft_block_size": config.oft_block_size,
+                    "lora_rank": config.lora_rank,
+                    "lora_alpha": config.lora_alpha,
+                    "noising_bias": config.noising_bias,
+                    "noising_weight": config.noising_weight,
+                    "resolution": config.resolution,
+                    "epochs": config.epochs,
+                    "train_dtype": config.train_dtype.name,
+                    "lora_weight_dtype": config.lora_weight_dtype.name,
+                    "output_dtype": config.output_dtype.name,
+                }
+            )
 
         self.model = None
         self.one_step_trained = False
@@ -246,6 +279,12 @@ class GenericTrainer(BaseTrainer):
                             f"sample{str(i)} - {safe_prompt}", pil_to_tensor(sampler_output.data),  # noqa: B023
                             train_progress.global_step
                         )
+
+                    if self.config.samples_to_wandb:
+                        wandb.log(
+                            { f"sample{str(i)}": wandb.Image(pil_to_tensor(sampler_output.data),caption=sample_config.prompt)},
+                            train_progress.global_step
+                        )
                     self.callbacks.on_sample_default(sampler_output)
 
                 def on_sample_custom(sampler_output: ModelSamplerOutput):
@@ -405,6 +444,10 @@ class GenericTrainer(BaseTrainer):
                                             average_loss,
                                             train_progress.global_step)
 
+                if self.config.wandb:
+                    wandb.log({f"loss/validation_step/{mapping_seed_to_label[concept_seed]}": average_loss},
+                              train_progress.global_step)
+
             if len(concept_counts) > 1:
                 total_loss = sum(accumulated_loss_per_concept[key] for key in concept_counts)
                 total_count = sum(concept_counts[key] for key in concept_counts)
@@ -413,6 +456,10 @@ class GenericTrainer(BaseTrainer):
                 self.tensorboard.add_scalar("loss/validation_step/total_average",
                                             total_average_loss,
                                             train_progress.global_step)
+
+                if self.config.wandb:
+                    wandb.log({"loss/validation_step/total_average": total_average_loss},
+                              train_progress.global_step)
 
     def __save_backup_config(self, backup_path):
         config_path = os.path.join(backup_path, "onetrainer_config")
@@ -799,6 +846,9 @@ class GenericTrainer(BaseTrainer):
                                 raise RuntimeError("Training loss became NaN. This may be due to invalid parameters, precision issues, or a bug in the loss computation.")
 
                             self.tensorboard.add_scalar("loss/train_step",accumulated_loss_cpu , train_progress.global_step)
+                            if self.config.wandb:
+                                wandb.log({"loss": accumulated_loss_cpu}, train_progress.global_step)
+
                             ema_loss = ema_loss or accumulated_loss_cpu
                             ema_loss_steps += 1
                             ema_loss_decay = min(0.99, 1 - (1 / ema_loss_steps))
@@ -808,6 +858,8 @@ class GenericTrainer(BaseTrainer):
                                 'smooth loss': ema_loss,
                             })
                             self.tensorboard.add_scalar("smooth_loss/train_step", ema_loss, train_progress.global_step)
+                            if self.config.wandb:
+                                wandb.log({"smoothed loss": ema_loss}, train_progress.global_step)
 
                         accumulated_loss = 0.0
                         self.model_setup.after_optimizer_step(self.model, self.config, train_progress)
@@ -820,6 +872,11 @@ class GenericTrainer(BaseTrainer):
                                 self.model.ema.get_current_decay(update_step),
                                 train_progress.global_step
                             )
+                            if self.config.wandb:
+                                wandb.log(
+                                    {"ema decay": self.model.ema.get_current_decay(update_step)},
+                                    train_progress.global_step
+                              )
                             self.model.ema.step(
                                 self.parameters,
                                 update_step
@@ -884,6 +941,9 @@ class GenericTrainer(BaseTrainer):
 
             if self.config.tensorboard and not self.config.tensorboard_always_on:
                 super()._stop_tensorboard()
+
+            if self.config.wandb:
+                wandb.finish(0)
 
         for handle in self.grad_hook_handles:
             handle.remove()
